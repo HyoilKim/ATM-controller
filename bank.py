@@ -22,22 +22,22 @@ class Bank:
     def __init__(self):
         self.card_db = dummy
 
-    def validate_pin(self, card_number, pin):
+    def validate_pin(self, card_number: str, pin: str) -> bool:
         if self.card_db[card_number]['pin'] == pin:
             return True
         else:
             return False
 
-    def validate_card(self, card_number):
+    def validate_card(self, card_number: str) -> bool:
         return card_number in self.card_db
 
-    def validate_account(self, card_number, account_number):
+    def validate_account(self, card_number: str, account_number: str) -> bool:
         return account_number in self.card_db[card_number]['accounts']
 
-    def get_accounts(self, card_number):
+    def get_accounts(self, card_number: str) -> bool:
         return self.card_db[card_number]['accounts']
 
-    def transaction(self, params):
+    def transaction(self, params: dict) -> dict:
         card_number = params['card_number']
         account_number = params['account_number']
         money = params['money']

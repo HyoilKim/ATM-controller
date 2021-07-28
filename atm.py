@@ -1,5 +1,5 @@
 from bank import Bank
-from exceptions import AuthException, ActionException
+from exceptions import AuthException, NotAllowedActionException
 
 # Insert Card 
 # => PIN number 
@@ -9,7 +9,7 @@ from exceptions import AuthException, ActionException
 class ATM:
     def __init__(self):
         self.bank = Bank()
-        self.cashbin = 10000 # 10,000
+        self.cashbin = 100000 # 100,000
         self.current_card = None
         self.current_account = None
         self.authuser = False
@@ -20,7 +20,7 @@ class ATM:
         self.current_account = None
         self.authuser = False
     
-    def validate_card(self, card_number):
+    def insert_card(self, card_number):
         if self.bank.validate_card(card_number):
             self.current_card = card_number
             return True
@@ -28,18 +28,12 @@ class ATM:
             self.remove_card()
             return False
 
-    def validate_pin(self, pin):
+    def enter_pin(self, pin):
         if self.bank.validate_pin(self.current_card, pin):
             self.authuser = True
             return True
         else:
             self.authuser = False
-            return False
-
-    def validate_account(self, account_number):
-        if self.bank.validate_account(self.current_card, account_number):
-            return True
-        else:
             return False
 
     def show_accounts(self):
@@ -48,9 +42,13 @@ class ATM:
         else:
             raise AuthException
 
-    def set_account(self, account_number):
+    def select_account(self, account_number):
         if self.authuser:
-            self.current_account = account_number
+            if self.bank.validate_account(self.current_card, account_number):
+                self.current_account = account_number
+                return True
+            else:
+                return False
         else:
             raise AuthException
 
@@ -72,14 +70,16 @@ class ATM:
                     params['msg'] = 'Not enough cashbin. Current cashbin: {}'.format(self.cashbin)
                 else:
                     params = self.bank.transaction(params)
-                    self.cashbin -= money
+                    if params['status'] == 'ok':
+                        self.cashbin -= money
             elif params['action'] == 'deposit':
                 params = self.bank.transaction(params)
-                self.cashbin += money
+                if params['status'] == 'ok':
+                    self.cashbin += money
             elif params['action'] == 'balance':
                 params = self.bank.transaction(params)
         else:
-            raise ActionException
+            raise NotAllowedActionException
 
         return params
     

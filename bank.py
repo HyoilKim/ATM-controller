@@ -1,5 +1,5 @@
 from account import Account
-from exceptions import ActionException
+from exceptions import NotAllowedActionException
 
 dummy = {
     '1234-0000-1234-0000':{
@@ -46,16 +46,24 @@ class Bank:
         if params['action'] == 'balance':
             params['status'] = 'ok'
         elif params['action'] == 'deposit':
-            params['status'] = 'ok'
-            account.deposit(money)
-        elif params['action'] == 'withdraw':
-            if account.withdraw(money):
-                params['status'] = 'ok'
-            else:
+            if not money:
                 params['status'] = 'error'
-                params['msg'] = 'Not enough balance'
+                params['msg'] = 'No input money'
+            else:
+                params['status'] = 'ok'
+                account.deposit(money)
+        elif params['action'] == 'withdraw':
+            if not money:
+                params['status'] = 'error'
+                params['msg'] = 'No input money'
+            else:
+                if account.withdraw(money):
+                    params['status'] = 'ok'
+                else:
+                    params['status'] = 'error'
+                    params['msg'] = 'Not enough balance'
         else:
-            raise ActionException
+            raise NotAllowedActionException
 
         params['balance'] = account.get_balance()
         return params

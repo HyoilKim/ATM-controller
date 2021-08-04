@@ -17,7 +17,7 @@ Based on your work, another engineer should be able to implement the user interf
 
 You can simplify some complex real world problems if you think it's not worth illustrating in the project.
 
-### Code explanation
+### Code Description
 - class ATM(ATM.py) 
     - variables
       - `bank`: can access bank api
